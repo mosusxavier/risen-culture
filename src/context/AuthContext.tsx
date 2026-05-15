@@ -8,6 +8,7 @@ interface User {
   name: string;
   email: string;
   avatar: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
@@ -54,14 +55,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('name')
+        .select('name, is_admin')
         .eq('id', id)
         .single();
         
       if (data) {
-        setUser({ id, email, name: data.name || 'User', avatar: data.name ? data.name[0].toUpperCase() : 'U' });
+        setUser({ 
+          id, 
+          email, 
+          name: data.name || 'User', 
+          avatar: data.name ? data.name[0].toUpperCase() : 'U',
+          isAdmin: data.is_admin || false
+        });
       } else {
-        setUser({ id, email, name: 'User', avatar: 'U' });
+        setUser({ id, email, name: 'User', avatar: 'U', isAdmin: false });
       }
     } catch (e) {
       console.error(e);
