@@ -89,10 +89,14 @@ function ShopContent() {
       </div>
 
       {/* Body */}
-      <div style={{ display:'flex', minHeight:'70vh', background:'var(--black)' }}>
+      <div style={{ display:'flex', minHeight:'70vh', background:'var(--black)', flexDirection: sidebarOpen ? 'row' : 'column' }} className="shop-body">
         {/* Sidebar */}
-        {sidebarOpen && (
-          <aside style={{ width:'240px', flexShrink:0, borderRight:'1px solid var(--white-faint)', padding:'28px 20px' }}>
+        <aside className={`shop-sidebar ${sidebarOpen ? 'open' : ''}`} style={{ width: sidebarOpen ? '240px' : '0', flexShrink:0, borderRight: sidebarOpen ? '1px solid var(--white-faint)' : 'none', padding: sidebarOpen ? '28px 20px' : '0', overflow:'hidden', transition:'all 0.3s' }}>
+          <div style={{ minWidth:'200px' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' }} className="nav-mobile">
+              <span style={{ fontFamily:'var(--font-display)', fontSize:'1.2rem', letterSpacing:'0.1em' }}>Filters</span>
+              <button onClick={() => setSidebarOpen(false)} style={{ background:'none', border:'none', color:'var(--white-dim)', fontSize:'1.2rem', cursor:'pointer' }}>✕</button>
+            </div>
             {/* Size */}
             <div style={{ marginBottom:'28px' }}>
               <div style={{ fontFamily:'var(--font-condensed)', fontSize:'0.68rem', letterSpacing:'0.35em', textTransform:'uppercase', color:'var(--burgundy)', marginBottom:'14px', paddingBottom:'10px', borderBottom:'1px solid var(--white-faint)' }}>Size</div>
@@ -124,11 +128,11 @@ function ShopContent() {
               onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(245,240,235,0.1)'; e.currentTarget.style.color='var(--white-dim)'; }}>
               Clear All Filters
             </button>
-          </aside>
-        )}
+          </div>
+        </aside>
 
         {/* Grid */}
-        <div style={{ flex:1, padding:'28px', paddingBottom:'80px' }}>
+        <div style={{ flex:1, padding:'28px', paddingBottom:'80px' }} className="shop-grid-container">
           {filtered.length === 0 ? (
             <div style={{ textAlign:'center', padding:'80px 20px' }}>
               <div style={{ fontFamily:'var(--font-display)', fontSize:'4rem', color:'rgba(245,240,235,0.06)', marginBottom:'16px' }}>✝</div>
@@ -142,8 +146,13 @@ function ShopContent() {
         </div>
       </div>
       <style>{`
+        @media(max-width:1024px){
+          .shop-sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1500; background: var(--off-black); width: 280px !important; transform: translateX(-100%); border-right: 1px solid var(--burgundy) !important; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+          .shop-sidebar.open { transform: translateX(0); }
+        }
         @media(max-width:768px){
-          .shop-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .shop-grid { grid-template-columns: repeat(2,1fr) !important; gap: 2px !important; }
+          .shop-grid-container { padding: 10px !important; }
         }
         @media(max-width:480px){
           .shop-grid { grid-template-columns: 1fr !important; }

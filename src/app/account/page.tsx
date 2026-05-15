@@ -130,9 +130,9 @@ export default function AccountPage() {
 
       <div style={{ maxWidth:'1200px', margin:'0 auto', padding:'40px 5%' }}>
         {/* Tabs */}
-        <div style={{ display:'flex', gap:'0', borderBottom:'1px solid var(--white-faint)', marginBottom:'40px' }}>
+        <div style={{ display:'flex', gap:'0', borderBottom:'1px solid var(--white-faint)', marginBottom:'40px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="account-tabs">
           {(['orders','profile','wishlist'] as Tab[]).map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{ padding:'14px 24px', background:'none', border:'none', borderBottom: tab===t ? '2px solid var(--burgundy)' : '2px solid transparent', fontFamily:'var(--font-condensed)', fontSize:'0.78rem', letterSpacing:'0.2em', textTransform:'uppercase', color: tab===t ? 'var(--white)' : 'var(--white-dim)', cursor:'pointer', marginBottom:'-1px', transition:'color 0.3s' }}>
+            <button key={t} onClick={() => setTab(t)} style={{ padding:'14px 24px', background:'none', border:'none', borderBottom: tab===t ? '2px solid var(--burgundy)' : '2px solid transparent', fontFamily:'var(--font-condensed)', fontSize:'0.78rem', letterSpacing:'0.2em', textTransform:'uppercase', color: tab===t ? 'var(--white)' : 'var(--white-dim)', cursor:'pointer', marginBottom:'-1px', transition:'color 0.3s', whiteSpace:'nowrap' }}>
               {t==='orders' ? 'My Orders' : t==='profile' ? 'Profile' : 'Wishlist'}
             </button>
           ))}
@@ -185,19 +185,19 @@ export default function AccountPage() {
                           </div>
                           {order.tracking && (
                             <div style={{ marginTop:'16px', padding:'14px', background:'rgba(123,28,46,0.1)', border:'1px solid rgba(123,28,46,0.2)' }}>
-                              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'8px' }}>
+                              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'12px' }} className="tracking-container">
                                 <div>
                                   <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.68rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--burgundy)', marginBottom:'4px' }}>Tracking ID</p>
                                   <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.9rem', color:'var(--white)', letterSpacing:'0.1em' }}>{order.tracking}</p>
                                 </div>
-                                <div style={{ display:'flex', gap:'8px', alignItems:'center' }}>
+                                <div style={{ display:'flex', gap:'8px', alignItems:'center', overflowX:'auto', paddingBottom:'4px' }} className="tracking-stages">
                                   {['Ordered','Dispatched','In Transit','Delivered'].map((stage, si) => {
                                     const stageReached = order.status==='delivered' ? true : order.status==='shipped' ? si < 3 : si < 1;
                                     return (
-                                      <div key={stage} style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+                                      <div key={stage} style={{ display:'flex', alignItems:'center', gap:'4px', flexShrink:0 }}>
                                         <div style={{ width:'8px', height:'8px', borderRadius:'50%', background: stageReached ? 'var(--burgundy)' : 'rgba(245,240,235,0.15)' }} />
                                         <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.58rem', letterSpacing:'0.05em', color: stageReached ? 'var(--white)' : 'rgba(245,240,235,0.3)', textTransform:'uppercase' }}>{stage}</span>
-                                        {si < 3 && <div style={{ width:'16px', height:'1px', background: stageReached ? 'var(--burgundy)' : 'rgba(245,240,235,0.1)' }} />}
+                                        {si < 3 && <div style={{ width:'16px', height:'1px', background: stageReached ? 'var(--burgundy)' : 'rgba(245,240,235,0.1)' }} className="tracking-line" />}
                                       </div>
                                     );
                                   })}
@@ -242,6 +242,13 @@ export default function AccountPage() {
           </div>
         )}
       </div>
+      <style>{`
+        @media (max-width: 768px) {
+          .tracking-line { width: 8px !important; }
+          .tracking-stages { gap: 4px !important; }
+          .account-tabs::-webkit-scrollbar { display: none; }
+        }
+      `}</style>
     </div>
   );
 }

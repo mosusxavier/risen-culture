@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 const footerLinks = {
   Shop: [
@@ -13,42 +14,33 @@ const footerLinks = {
   Support: [
     { label: 'My Account', href: '/account' },
     { label: 'Order Tracking', href: '/account#orders' },
-    { label: 'Returns Policy', href: '/#contact' },
-    { label: 'Size Guide', href: '/#size-guide' },
-    { label: 'Contact Us', href: '/#contact' },
+    { label: 'Size Guide', href: '/size-guide' },
+    { label: 'Instagram', href: 'https://instagram.com/risenculture.in' },
+    { label: 'Email Support', href: 'mailto:risenculture.store@gmail.com' },
   ],
   Brand: [
     { label: 'Our Story', href: '/#about' },
     { label: 'The Mission', href: '/#about' },
     { label: 'Community', href: '/#gallery' },
-    { label: 'Admin Portal', href: '/admin' },
-    { label: 'Stockists', href: '/#contact' },
   ],
 };
 
 const socials = [
-  { label: 'IG', href: 'https://instagram.com' },
+  { label: 'IG', href: 'https://instagram.com/risenculture.in' },
   { label: 'TW', href: 'https://twitter.com' },
+  { label: 'TH', href: 'https://threads.net/@risenculture.in' },
   { label: 'YT', href: 'https://youtube.com' },
-  { label: 'FB', href: 'https://facebook.com' },
 ];
 
 export default function Footer() {
+  const { user } = useAuth();
   return (
     <footer style={{
       background: 'var(--off-black)',
       borderTop: '1px solid var(--white-faint)',
       padding: '60px 5% 32px',
     }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-        gap: '48px',
-        maxWidth: '1300px',
-        margin: '0 auto',
-        paddingBottom: '48px',
-        borderBottom: '1px solid var(--white-faint)',
-      }}>
+      <div className="footer-grid">
         {/* Brand column */}
         <div>
           <div style={{
@@ -112,13 +104,43 @@ export default function Footer() {
                     textDecoration: 'none', fontFamily: 'var(--font-condensed)',
                     letterSpacing: '0.05em', transition: 'color 0.3s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,235,0.45)')}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,235,0.45)')}
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
+              {/* Conditional Admin Portal */}
+              {heading === 'Brand' && user?.isAdmin && (
+                <li>
+                  <Link href="/admin" style={{
+                    fontSize: '0.85rem', color: 'rgba(245,240,235,0.45)',
+                    textDecoration: 'none', fontFamily: 'var(--font-condensed)',
+                    letterSpacing: '0.05em', transition: 'color 0.3s',
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,235,0.45)')}
+                  >
+                    Admin Portal
+                  </Link>
+                </li>
+              )}
+              {/* Conditional Admin Portal */}
+              {heading === 'Brand' && user?.isAdmin && (
+                <li>
+                  <Link href="/admin" style={{
+                    fontSize: '0.85rem', color: 'rgba(245,240,235,0.45)',
+                    textDecoration: 'none', fontFamily: 'var(--font-condensed)',
+                    letterSpacing: '0.05em', transition: 'color 0.3s',
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,235,0.45)')}
+                  >
+                    Admin Portal
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         ))}
@@ -148,8 +170,8 @@ export default function Footer() {
               fontSize: '0.7rem', letterSpacing: '0.1em', flexShrink: 0,
               transition: 'background 0.3s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--burgundy-light)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--burgundy)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--burgundy-light)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--burgundy)')}
             >
               JOIN
             </button>
@@ -167,7 +189,7 @@ export default function Footer() {
           fontSize: '0.72rem', color: 'rgba(245,240,235,0.22)',
           fontFamily: 'var(--font-condensed)', letterSpacing: '0.1em',
         }}>
-          © 2024 Risen Culture · All rights reserved.
+          © 2026 Risen Culture · All rights reserved.
         </p>
         <p style={{
           fontFamily: 'var(--font-condensed)', fontSize: '0.68rem',

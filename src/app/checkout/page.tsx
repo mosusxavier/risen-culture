@@ -16,7 +16,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<Step>('cart');
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState('');
-  const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'', method:'upi', upi:'' });
+  const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'', method:'upi', upi:'', txnId:'' });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
     setLoading(false);
   };
 
-  const shipping = totalPrice >= 999 ? 0 : 99;
+  const shipping = totalPrice >= 999 ? 0 : 60;
   const grandTotal = totalPrice + shipping;
 
   const stepLabels: Step[] = ['cart','shipping','payment','confirm'];
@@ -166,9 +166,26 @@ export default function CheckoutPage() {
               </div>
 
               {form.method==='upi' && (
-                <div style={{ display:'flex', flexDirection:'column', gap:'6px', marginBottom:'20px' }}>
-                  <label className="rc-label">UPI ID</label>
-                  <input type="text" className="rc-input" value={form.upi} onChange={e => update('upi',e.target.value)} placeholder="yourname@upi" />
+                <div style={{ padding:'24px', background:'var(--card-bg)', border:'1px solid var(--white-faint)', borderRadius:'8px', marginBottom:'24px', textAlign:'center' }}>
+                  <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--white-dim)', marginBottom:'16px' }}>Scan to Pay with any UPI App</p>
+                  
+                  {/* QR Code Placeholder - In production replace with real QR */}
+                  <div style={{ width:'200px', height:'200px', margin:'0 auto 20px', background:'var(--white)', padding:'10px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+                    <div style={{ fontSize:'0.6rem', color:'var(--black)', fontWeight:700, marginBottom:'4px' }}>UPI ID: mosusxavier@okhdfcbank</div>
+                    <div style={{ border:'8px solid var(--black)', width:'140px', height:'140px', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--black)', fontSize:'4rem' }}>QR</div>
+                    <div style={{ fontSize:'0.8rem', color:'var(--burgundy)', fontWeight:800, marginTop:'4px' }}>₹{grandTotal.toLocaleString('en-IN')}</div>
+                  </div>
+
+                  <a href={`upi://pay?pa=mosusxavier@okhdfcbank&pn=Risen%20Culture&am=${grandTotal}&cu=INR`} 
+                     style={{ display:'inline-block', width:'100%', padding:'14px', background:'#2da94f', color:'var(--white)', textDecoration:'none', fontFamily:'var(--font-condensed)', fontSize:'0.85rem', letterSpacing:'0.15em', textTransform:'uppercase', fontWeight:700, borderRadius:'4px', marginBottom:'20px' }}>
+                    Pay via GPay / UPI App
+                  </a>
+
+                  <div style={{ borderTop:'1px solid var(--white-faint)', paddingTop:'20px', textAlign:'left' }}>
+                    <label className="rc-label" style={{ color:'var(--white)' }}>Enter UPI Transaction ID (Reference No.)</label>
+                    <p style={{ fontSize:'0.65rem', color:'var(--white-dim)', marginBottom:'8px' }}>Payment must be completed first. Order will be confirmed after verifying TXN ID.</p>
+                    <input type="text" className="rc-input" value={form.txnId} onChange={e => update('txnId',e.target.value)} placeholder="12-digit UPI Ref No." />
+                  </div>
                 </div>
               )}
               {form.method==='paypal' && (
@@ -181,8 +198,8 @@ export default function CheckoutPage() {
 
               <div style={{ display:'flex', gap:'12px' }}>
                 <button onClick={() => setStep('shipping')} className="btn-secondary" style={{ flex:1 }}>← Back</button>
-                <button onClick={handlePlaceOrder} className="btn-primary" style={{ flex:2, opacity: loading ? 0.7 : 1 }} disabled={loading}>
-                  {loading ? 'Processing…' : `Place Order · ₹${grandTotal.toLocaleString('en-IN')}`}
+                <button onClick={handlePlaceOrder} className="btn-primary" style={{ flex:2, opacity: (loading || (form.method==='upi' && !form.txnId)) ? 0.7 : 1 }} disabled={loading || (form.method==='upi' && !form.txnId)}>
+                  {loading ? 'Processing…' : `Confirm Payment & Place Order`}
                 </button>
               </div>
               <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.65rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--white-dim)', textAlign:'center', marginTop:'12px' }}>

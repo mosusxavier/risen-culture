@@ -35,7 +35,7 @@ export default function HomePage() {
           <rect x="0" y="35" width="100" height="20" />
         </svg>
         <div style={{ position:'relative', zIndex:2, textAlign:'center', padding:'0 20px', maxWidth:'900px' }}>
-          <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', letterSpacing:'0.4em', textTransform:'uppercase', color:'var(--burgundy-light)', marginBottom:'20px', animation:'fadeUp 0.8s 0.2s both' }}>Christian Streetwear · Est. 2024</p>
+          <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', letterSpacing:'0.4em', textTransform:'uppercase', color:'var(--burgundy-light)', marginBottom:'20px', animation:'fadeUp 0.8s 0.2s both' }}>Christian Streetwear · Est. 2026</p>
           <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(4.5rem,12vw,11rem)', lineHeight:0.9, letterSpacing:'0.02em', color:'var(--white)', marginBottom:'24px', animation:'fadeUp 0.8s 0.4s both' }}>
             HE ROSE.<br /><span style={{ color:'var(--burgundy)' }}>SO DO</span> WE.
           </h1>
@@ -47,19 +47,19 @@ export default function HomePage() {
             <Link href="#about" className="btn-secondary">Our Story</Link>
           </div>
         </div>
-        <div style={{ position:'absolute', bottom:'40px', left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', animation:'fadeUp 0.8s 1.2s both' }}>
+        <div style={{ position:'absolute', bottom:'40px', left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', animation:'fadeUp 0.8s 1.2s both' }} className="nav-desktop">
           <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.65rem', letterSpacing:'0.3em', textTransform:'uppercase', color:'var(--white-dim)' }}>Scroll</span>
           <div style={{ width:'1px', height:'40px', background:'linear-gradient(var(--burgundy),transparent)', animation:'scrollLine 1.5s ease infinite' }} />
         </div>
       </section>
 
       {/* ANNOUNCEMENT */}
-      <div style={{ background:'var(--burgundy)', padding:'12px 5%', display:'flex', justifyContent:'center', alignItems:'center', gap:'24px', flexWrap:'wrap', fontFamily:'var(--font-condensed)', fontSize:'0.78rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--white)' }}>
-        <span>† Free Shipping on orders above ₹999</span>
-        <span style={{ opacity:0.4 }}>|</span>
-        <span>New Drop: Crown of Thorns Collection</span>
-        <span style={{ opacity:0.4 }}>|</span>
-        <span>Handcrafted in Tamil Nadu</span>
+      <div style={{ background:'var(--burgundy)', padding:'10px 5%', display:'flex', justifyContent:'center', alignItems:'center', gap:'12px 24px', flexWrap:'wrap', fontFamily:'var(--font-condensed)', fontSize:'0.72rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--white)', textAlign: 'center' }}>
+        <span>† Free Shipping above ₹999</span>
+        <span style={{ opacity:0.4 }} className="nav-desktop">|</span>
+        <span>New Drop: Crown of Thorns</span>
+        <span style={{ opacity:0.4 }} className="nav-desktop">|</span>
+        <span>Handcrafted in India</span>
       </div>
 
       {/* FEATURED PRODUCTS */}
@@ -69,7 +69,7 @@ export default function HomePage() {
           <h2 className="section-title reveal">LATEST DROPS</h2>
           <p className="section-sub reveal" style={{ margin:'0 auto', textAlign:'center' }}>Premium Christian streetwear. Every tee tells a story of resurrection power.</p>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))', gap:'3px', maxWidth:'1300px', margin:'0 auto' }}>
+        <div className="grid-responsive">
           {FEATURED.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
         <div style={{ textAlign:'center', marginTop:'48px' }}>
@@ -79,14 +79,14 @@ export default function HomePage() {
 
       {/* BRAND STORY */}
       <section id="about" style={{ padding:'clamp(80px,10vw,130px) 5%', background:'var(--off-black)' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:'80px', alignItems:'center', maxWidth:'1200px', margin:'0 auto' }}>
+        <div className="grid-story">
           <div className="reveal-left">
             <p className="section-label">Our Story</p>
             <h2 className="section-title">BORN FROM<br /><span style={{ color:'var(--burgundy)' }}>FAITH.</span><br />BUILT FOR THE BOLD.</h2>
             <p className="section-sub" style={{ marginTop:'16px' }}>Risen Culture was born in Tiruchirappalli, Tamil Nadu — out of a conviction that faith deserves a voice in every street, every crowd. We design statements of identity for the generation that dares to stand apart.</p>
             <p className="section-sub" style={{ marginTop:'14px' }}>Every thread, every print, every stitch is an act of worship. When you wear your faith boldly, you invite conversations that change lives. That&apos;s the Risen Culture mission.</p>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'2px', marginTop:'40px' }}>
-              {[['2K+','Believers Wearing RC'],['4.9','Average Rating'],['24h','Dispatch Time'],['100%','Faith-Inspired']].map(([num, label]) => (
+            <div className="grid-stats">
+              {[['2K+','Believers Wearing RC'],['4.9','Average Rating'],['4-9 Days','Dispatch Time'],['100%','Faith-Inspired']].map(([num, label]) => (
                 <div key={label} style={{ background:'var(--card-bg)', padding:'24px', borderLeft:'3px solid var(--burgundy)' }}>
                   <div style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', color:'var(--white)' }}>{num}</div>
                   <div style={{ fontFamily:'var(--font-condensed)', fontSize:'0.7rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--white-dim)', marginTop:'4px' }}>{label}</div>
@@ -113,7 +113,7 @@ export default function HomePage() {
           <p className="section-label reveal">Shop By</p>
           <h2 className="section-title reveal">COLLECTIONS</h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'3px', maxWidth:'1300px', margin:'0 auto' }}>
+        <div className="grid-categories">
           {[
             { title:"Men's", sub:'Bold, heavyweight pieces', href:'/shop?category=men', icon:'†', grad:'linear-gradient(135deg,#1a0810,#0f0608)' },
             { title:"Women's", sub:'Elegant faith wear', href:'/shop?category=women', icon:'✦', grad:'linear-gradient(135deg,#2d0d1a,#1a0810)' },
@@ -140,7 +140,7 @@ export default function HomePage() {
           <p className="section-label reveal">Reviews</p>
           <h2 className="section-title reveal">WHAT THEY SAY</h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'3px', maxWidth:'1300px', margin:'0 auto' }}>
+        <div className="grid-responsive">
           {REVIEWS.map(r => (
             <div key={r.name} className="reveal" style={{ background:'var(--card-bg)', padding:'36px', borderTop:'3px solid var(--burgundy)' }}>
               <div style={{ fontFamily:'var(--font-display)', fontSize:'3.5rem', color:'var(--burgundy)', lineHeight:0.5, marginBottom:'16px' }}>&quot;</div>
@@ -154,6 +154,42 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* COMMUNITY GALLERY & UPLOAD */}
+      <section id="gallery" style={{ padding:'clamp(60px,8vw,100px) 5%', background:'var(--off-black)', borderTop:'1px solid var(--white-faint)' }}>
+        <div style={{ textAlign:'center', marginBottom:'60px' }}>
+          <p className="reveal" style={{ fontFamily:'var(--font-condensed)', fontSize:'0.7rem', letterSpacing:'0.4em', textTransform:'uppercase', color:'var(--burgundy)', marginBottom:'12px' }}>#RISENCULTURE</p>
+          <h2 className="reveal" style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.5rem,6vw,5rem)', marginBottom:'20px' }}>JOIN THE COMMUNITY</h2>
+          <p className="reveal" style={{ fontFamily:'var(--font-body)', fontSize:'1rem', color:'var(--white-dim)', maxWidth:'600px', margin:'0 auto' }}>Show us how you wear your faith. Tag us on socials or upload your look below to be featured.</p>
+        </div>
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:'20px', marginBottom:'60px' }}>
+          {/* Mock Gallery Items */}
+          {[1,2,3,4].map(i => (
+            <div key={i} className="reveal" style={{ aspectRatio:'1', background:'var(--card-bg)', position:'relative', overflow:'hidden', border:'1px solid var(--white-faint)' }}>
+              <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-display)', fontSize:'4rem', color:'rgba(245,240,235,0.03)' }}>✝</div>
+              <div style={{ position:'absolute', bottom:'16px', left:'16px', fontFamily:'var(--font-condensed)', fontSize:'0.7rem', letterSpacing:'0.1em', color:'var(--white-dim)' }}>@community_user_{i}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="reveal" style={{ maxWidth:'500px', margin:'0 auto', background:'var(--black)', padding:'40px', border:'1px solid var(--burgundy)', textAlign:'center' }}>
+          <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.8rem', marginBottom:'12px' }}>UPLOAD YOUR LOOK</h3>
+          <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.8rem', letterSpacing:'0.1em', color:'var(--white-dim)', marginBottom:'24px' }}>Got your Risen Culture apparel? Share a photo and join the movement.</p>
+          <div 
+            onClick={() => document.getElementById('comm-upload')?.click()}
+            style={{ border:'2px dashed var(--white-faint)', padding:'30px', cursor:'pointer', transition:'all 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--burgundy)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--white-faint)'}>
+            <div style={{ fontSize:'2rem', marginBottom:'10px' }}>📸</div>
+            <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', letterSpacing:'0.1em', textTransform:'uppercase' }}>Select Photo or Drag & Drop</p>
+            <input type="file" style={{ display:'none' }} id="comm-upload" accept="image/*" />
+          </div>
+          <button style={{ marginTop:'20px', width:'100%', padding:'14px', background:'var(--burgundy)', border:'none', color:'var(--white)', fontFamily:'var(--font-condensed)', fontSize:'0.8rem', letterSpacing:'0.2em', textTransform:'uppercase', cursor:'pointer' }}>
+            Submit for Feature
+          </button>
         </div>
       </section>
 

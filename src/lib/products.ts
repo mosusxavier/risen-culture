@@ -9,7 +9,7 @@ export interface Product {
   collection: string;
   badge?: 'new' | 'sale' | 'limited';
   sizes: string[];
-  colors: { name: string; hex: string }[];
+  colors: { name: string; hex: string; images?: string[] }[];
   rating: number;
   reviewCount: number;
   description: string;
@@ -39,9 +39,9 @@ export const PRODUCTS: Product[] = [
     badge: 'new',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: [
-      { name: 'Black', hex: '#0a0a0a' },
-      { name: 'Off-White', hex: '#f5f0eb' },
-      { name: 'Burgundy', hex: '#7B1C2E' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/cross-front.png', '/cross-back.png'] },
+      { name: 'White', hex: '#ffffff', images: ['/cross-white-front.png', '/cross-white-back.png'] },
+      { name: 'Dark Crimson', hex: '#722f37', images: ['/cross-crimson-front.png', '/cross-crimson-back.png'] },
     ],
     rating: 5,
     reviewCount: 24,
@@ -49,7 +49,7 @@ export const PRODUCTS: Product[] = [
     features: ['240gsm heavyweight cotton', 'Vintage distressed print', 'Drop shoulder fit', 'Pre-washed for softness', 'Unisex sizing'],
     icon: '✝',
     gradient: 'linear-gradient(135deg,#1a0810,#0f0608)',
-    images: ['/cross-front.png', '/cross-back.png'],
+    images: ['/cross-front.png', '/cross-back.png', '/cross-crimson-front.png', '/cross-crimson-back.png', '/cross-white-front.png', '/cross-white-back.png'],
   },
   {
     id: 'he-rose-oversized-tee',
@@ -63,8 +63,8 @@ export const PRODUCTS: Product[] = [
     badge: 'sale',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: [
-      { name: 'Black', hex: '#0a0a0a' },
-      { name: 'Navy', hex: '#1a2744' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/he-rose-black-front.png', '/he-rose-black-back.png'] },
+      { name: 'Navy', hex: '#1a2744', images: ['/he-rose-navy-front.png', '/he-rose-navy-back.png'] },
     ],
     rating: 4.8,
     reviewCount: 18,
@@ -72,6 +72,7 @@ export const PRODUCTS: Product[] = [
     features: ['260gsm heavyweight cotton', 'Oversized boxy fit', 'Brushed interior for comfort', 'Ribbed crew neck', 'Screen-printed slogan'],
     icon: '↑',
     gradient: 'linear-gradient(135deg,#0f0f0f,#1a0810)',
+    images: ['/he-rose-black-front.png', '/he-rose-black-back.png'],
   },
   {
     id: 'romans-6-4-scripture-tee',
@@ -82,8 +83,8 @@ export const PRODUCTS: Product[] = [
     collection: 'Scripture Series',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: [
-      { name: 'Off-White', hex: '#f5f0eb' },
-      { name: 'Charcoal', hex: '#3d3d3d' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/romans-black-front.png', '/romans-black-back.png'] },
+      { name: 'Charcoal', hex: '#3d3d3d', images: ['/romans-charcoal-front.png', '/romans-charcoal-back.png'] },
     ],
     rating: 4.9,
     reviewCount: 31,
@@ -91,6 +92,7 @@ export const PRODUCTS: Product[] = [
     features: ['220gsm combed cotton', 'Regular fit', 'Full-chest scripture print', 'Double-stitched hem', 'Sustainable production'],
     icon: '64',
     gradient: 'linear-gradient(135deg,#1a0810,#0f0f0f)',
+    images: ['/romans-black-front.png', '/romans-black-back.png'],
   },
   {
     id: 'crown-of-thorns-drop-tee',
@@ -102,15 +104,16 @@ export const PRODUCTS: Product[] = [
     badge: 'limited',
     sizes: ['S', 'M', 'L', 'XL'],
     colors: [
-      { name: 'Burgundy', hex: '#7B1C2E' },
-      { name: 'Black', hex: '#0a0a0a' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/crown-black-front.png', '/crown-black-back.png'] },
+      { name: 'Burgundy', hex: '#7B1C2E', images: ['/crown-burgundy-front.png', '/crown-burgundy-back.png'] },
     ],
     rating: 5,
     reviewCount: 9,
     description: 'A limited edition drop featuring our signature Crown of Thorns graphic — a powerful emblem of sacrifice and redemption. Once it\'s gone, it\'s gone.',
-    features: ['280gsm heavyweight cotton', 'Limited run of 100 pieces', 'Embroidered logo', 'Garment-dyed finish', 'Certificate of authenticity'],
+    features: ['280gsm heavyweight cotton', 'Garment-dyed finish', 'Certificate of authenticity'],
     icon: '♛',
     gradient: 'linear-gradient(135deg,#2d0d1a,#1a0810)',
+    images: ['/crown-black-front.png', '/crown-black-back.png'],
   },
   {
     id: 'chosen-generation-tee',
@@ -122,8 +125,9 @@ export const PRODUCTS: Product[] = [
     badge: 'new',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: [
-      { name: 'Burgundy', hex: '#7B1C2E' },
-      { name: 'Cognac', hex: '#5c3317' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/chosen-black-front.png', '/chosen-black-back.png'] },
+      { name: 'Burgundy', hex: '#7B1C2E', images: ['/chosen-burgundy-front.png', '/chosen-burgundy-back.png'] },
+      { name: 'Cognac', hex: '#5c3317', images: ['/chosen-cognac-front.png', '/chosen-cognac-back.png'] },
     ],
     rating: 5,
     reviewCount: 7,
@@ -131,6 +135,7 @@ export const PRODUCTS: Product[] = [
     features: ['250gsm cotton blend', 'Slightly oversized fit', 'Front & back print', 'Enzyme washed', 'Scripture cuff detail'],
     icon: '❋',
     gradient: 'linear-gradient(135deg,#120a0e,#1a0810)',
+    images: ['/chosen-black-front.png', '/chosen-black-back.png'],
   },
   {
     id: 'eternal-life-drop-tee',
@@ -142,8 +147,8 @@ export const PRODUCTS: Product[] = [
     badge: 'limited',
     sizes: ['S', 'M', 'L', 'XL'],
     colors: [
-      { name: 'Black', hex: '#0a0a0a' },
-      { name: 'Burgundy', hex: '#7B1C2E' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/eternal-life-black-front.png', '/eternal-life-black-back.png'] },
+      { name: 'Burgundy', hex: '#7B1C2E', images: ['/eternal-life-burgundy-front.png', '/eternal-life-burgundy-back.png'] },
     ],
     rating: 4.8,
     reviewCount: 12,
@@ -151,6 +156,7 @@ export const PRODUCTS: Product[] = [
     features: ['270gsm premium cotton', 'Limited edition', 'Multi-layer screen print', 'Mineral washed', 'Heavyweight boxy fit'],
     icon: '∞',
     gradient: 'linear-gradient(135deg,#0f0f0f,#1a0810)',
+    images: ['/eternal-life-black-front.png', '/eternal-life-black-back.png'],
   },
   {
     id: 'grace-womens-tee',
@@ -162,8 +168,8 @@ export const PRODUCTS: Product[] = [
     badge: 'new',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: [
-      { name: 'Off-White', hex: '#f5f0eb' },
-      { name: 'Dusty Rose', hex: '#c0847a' },
+      { name: 'White', hex: '#ffffff', images: ['/grace-white-front.png', '/grace-white-back.png'] },
+      { name: 'Dusty Rose', hex: '#c0847a', images: ['/grace-rose-front.png', '/grace-rose-back.png'] },
     ],
     rating: 4.9,
     reviewCount: 15,
@@ -171,6 +177,7 @@ export const PRODUCTS: Product[] = [
     features: ['200gsm soft cotton', 'Relaxed feminine fit', 'Delicate script print', 'Satin label', 'Ethically made'],
     icon: '✦',
     gradient: 'linear-gradient(135deg,#1a0810,#2d0d1a)',
+    images: ['/grace-white-front.png', '/grace-white-back.png'],
   },
   {
     id: 'faith-hoodie',
@@ -184,22 +191,23 @@ export const PRODUCTS: Product[] = [
     badge: 'sale',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: [
-      { name: 'Black', hex: '#0a0a0a' },
-      { name: 'Charcoal', hex: '#3d3d3d' },
+      { name: 'Black', hex: '#0a0a0a', images: ['/faith-hoodie-black-front.png', '/faith-hoodie-black-back.png'] },
+      { name: 'Charcoal', hex: '#3d3d3d', images: ['/faith-hoodie-charcoal-front.png', '/faith-hoodie-charcoal-back.png'] },
     ],
     rating: 4.9,
     reviewCount: 22,
-    description: 'When fear comes knocking, faith answers the door. Our premium heavyweight hoodie features a brushed fleece interior for warmth and an embroidered "Faith Over Fear" chest logo.',
-    features: ['380gsm brushed fleece', 'Kangaroo pocket', 'Embroidered logo', 'Adjustable drawstrings', 'Ribbed cuffs & hem'],
+    description: 'When fear comes knocking, faith answers the door. Our premium heavyweight hoodie features a minimal front chest logo and a powerful back print illustrating the gateway of faith.',
+    features: ['380gsm premium brushed fleece', 'Minimal front logo', 'Intricate back illustration', 'Kangaroo pocket', 'Heavyweight boxy fit'],
     icon: '◈',
     gradient: 'linear-gradient(135deg,#111111,#1a0810)',
+    images: ['/faith-hoodie-black-front.png', '/faith-hoodie-black-back.png'],
   },
 ];
 
 export const MOCK_ORDERS: Order[] = [
   {
-    id: 'RC-20240112-001',
-    date: '2024-01-12',
+    id: 'RC-20260112-001',
+    date: '2026-01-12',
     status: 'delivered',
     items: [
       { name: 'Cross Graphic Tee', size: 'M', qty: 1, price: 699 },
@@ -209,8 +217,8 @@ export const MOCK_ORDERS: Order[] = [
     tracking: 'IN123456789',
   },
   {
-    id: 'RC-20240203-002',
-    date: '2024-02-03',
+    id: 'RC-20260203-002',
+    date: '2026-02-03',
     status: 'shipped',
     items: [
       { name: 'Faith Over Fear Hoodie', size: 'XL', qty: 1, price: 1499 },
@@ -219,8 +227,8 @@ export const MOCK_ORDERS: Order[] = [
     tracking: 'IN987654321',
   },
   {
-    id: 'RC-20240301-003',
-    date: '2024-03-01',
+    id: 'RC-20260301-003',
+    date: '2026-03-01',
     status: 'processing',
     items: [
       { name: 'Crown of Thorns Drop Tee', size: 'M', qty: 1, price: 899 },

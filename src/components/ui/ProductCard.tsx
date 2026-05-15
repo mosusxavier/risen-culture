@@ -59,31 +59,34 @@ export default function ProductCard({ product }: Props) {
           gap: '10px',
         }}>
           {/* Image / Placeholder */}
-          {product.images && product.images.length > 0 ? (
-            <img 
-              src={product.images[0]} 
-              alt={product.name} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
-          ) : (
-            <>
-              <div style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3rem, 6vw, 5rem)',
-                color: 'rgba(123,28,46,0.3)',
-                lineHeight: 1,
-              }}>
-                {product.icon}
-              </div>
-              <div style={{
-                fontFamily: 'var(--font-condensed)', fontSize: '0.65rem',
-                letterSpacing: '0.2em', textTransform: 'uppercase',
-                color: 'rgba(245,240,235,0.2)', textAlign: 'center', padding: '0 16px',
-              }}>
-                {product.name}
-              </div>
-            </>
-          )}
+          {(() => {
+            const displayImage = (selectedColor.images && selectedColor.images[0]) || (product.images && product.images[0]);
+            return displayImage ? (
+              <img 
+                src={displayImage} 
+                alt={product.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
+            ) : (
+              <>
+                <div style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(3rem, 6vw, 5rem)',
+                  color: 'rgba(123,28,46,0.3)',
+                  lineHeight: 1,
+                }}>
+                  {product.icon}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-condensed)', fontSize: '0.65rem',
+                  letterSpacing: '0.2em', textTransform: 'uppercase',
+                  color: 'rgba(245,240,235,0.2)', textAlign: 'center', padding: '0 16px',
+                }}>
+                  {product.name}
+                </div>
+              </>
+            );
+          })()}
 
           {/* Badge */}
           {product.badge && (
@@ -213,8 +216,20 @@ export default function ProductCard({ product }: Props) {
       </div>
 
       <style>{`
-        .pcard:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        .pcard:hover .qadd-overlay { transform: translateY(0); }
+        @media (hover: hover) {
+          .pcard:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+          .pcard:hover .qadd-overlay { transform: translateY(0); }
+        }
+        @media (hover: none), (max-width: 768px) {
+          .pcard { transform: none !important; }
+          .qadd-overlay { 
+            position: relative !important; 
+            transform: translateY(0) !important;
+            background: var(--card-bg) !important;
+            padding: 10px !important;
+          }
+          .pcard:active { transform: scale(0.98); }
+        }
       `}</style>
     </div>
   );

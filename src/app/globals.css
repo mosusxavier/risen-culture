@@ -245,3 +245,121 @@ body {
   color: var(--white-dim);
   max-width: 560px;
 }
+
+/* ── RESPONSIVE UTILITIES ── */
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 3px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.grid-story {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 80px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grid-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 40px;
+}
+
+.grid-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 48px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--white-faint);
+}
+
+@media (max-width: 1024px) {
+  .grid-story {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-story {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .grid-responsive {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .grid-categories {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .grid-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    font-size: 0.75rem;
+    width: 100%;
+    text-align: center;
+  }
+  .section-title {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+  .section-sub {
+    font-size: 0.9rem;
+  }
+  .reveal-right, .reveal-left {
+    transform: none !important;
+    opacity: 1 !important; /* Force visible on mobile if observer is flaky */
+    transition: none !important;
+  }
+  .rc-toast {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    text-align: center;
+  }
+  section {
+    padding: 60px 5% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+  .grid-categories {
+    grid-template-columns: 1fr;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-stats {
+    grid-template-columns: 1fr;
+  }
+}

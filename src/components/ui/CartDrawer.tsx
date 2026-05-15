@@ -127,14 +127,24 @@ export default function CartDrawer() {
         {/* Footer */}
         {items.length > 0 && (
           <div style={{ padding: '20px 24px', borderTop: '1px solid var(--white-faint)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--white-dim)' }}>
-                Total ({totalItems} items)
-              </span>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: 'var(--white)' }}>
-                ₹{totalPrice.toLocaleString('en-IN')}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--white-dim)' }}>Subtotal</span>
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.9rem', color: 'var(--white)' }}>₹{totalPrice.toLocaleString('en-IN')}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--white-dim)' }}>Shipping</span>
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.9rem', color: totalPrice >= 999 ? '#2d9e27' : 'var(--white)' }}>
+                {totalPrice >= 999 ? 'FREE' : '₹60'}
               </span>
             </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid var(--white-faint)' }}>
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--white)' }}>Total</span>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--white)' }}>
+                ₹{(totalPrice + (totalPrice >= 999 ? 0 : 60)).toLocaleString('en-IN')}
+              </span>
+            </div>
+
             <Link href="/checkout" onClick={closeCart} style={{
               display: 'block', width: '100%', padding: '14px', background: 'var(--burgundy)',
               border: 'none', color: 'var(--white)', cursor: 'pointer',
@@ -149,6 +159,14 @@ export default function CartDrawer() {
             </Link>
             <div style={{
               textAlign: 'center', marginTop: '12px',
+              fontFamily: 'var(--font-condensed)', fontSize: '0.6rem',
+              letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: 'var(--burgundy)', fontWeight: 600,
+            }}>
+              Dispatch Time: 4-9 Working Days
+            </div>
+            <div style={{
+              textAlign: 'center', marginTop: '8px',
               fontFamily: 'var(--font-condensed)', fontSize: '0.6rem',
               letterSpacing: '0.15em', textTransform: 'uppercase',
               color: 'rgba(245,240,235,0.2)',

@@ -23,6 +23,14 @@ export default function ProductPage({ params }: Props) {
   const [wished, setWished] = useState(false);
   const [activeTab, setActiveTab] = useState<'desc'|'features'|'reviews'>('desc');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [showSizeChart, setShowSizeChart] = useState(false);
+  
+  const currentImages = selectedColor.images || product.images || [];
+
+  const handleColorChange = (color: any) => {
+    setSelectedColor(color);
+    setActiveImageIdx(0);
+  };
 
   // Swipe detection state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -44,7 +52,7 @@ export default function ProductPage({ params }: Props) {
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    const maxIdx = (product.images && product.images.length > 0) ? product.images.length - 1 : 2;
+    const maxIdx = currentImages.length > 0 ? currentImages.length - 1 : 0;
 
     if (isLeftSwipe) setActiveImageIdx(prev => Math.min(prev + 1, maxIdx));
     if (isRightSwipe) setActiveImageIdx(prev => Math.max(prev - 1, 0));
@@ -82,8 +90,8 @@ export default function ProductPage({ params }: Props) {
             onTouchEnd={onTouchEndHandler}
             style={{ aspectRatio:'3/4', background:product.gradient, display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', touchAction: 'pan-y' }}
           >
-            {product.images && product.images.length > 0 ? (
-              <img src={product.images[activeImageIdx]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {currentImages.length > 0 ? (
+              <img src={currentImages[activeImageIdx]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <div style={{ fontFamily:'var(--font-display)', fontSize:'clamp(6rem,15vw,10rem)', color:'rgba(123,28,46,0.25)' }}>{product.icon}</div>
             )}
@@ -95,17 +103,13 @@ export default function ProductPage({ params }: Props) {
           </div>
           {/* Thumbnail row */}
           <div style={{ display:'flex', gap:'8px' }}>
-            {(product.images && product.images.length > 0 ? product.images : [...Array(3)]).map((img,i) => (
+            {currentImages.map((img,i) => (
               <div key={i} 
                 onClick={() => setActiveImageIdx(i)}
                 style={{ flex:1, aspectRatio:'1', background:product.gradient, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', border: i===activeImageIdx ? '1px solid var(--white)' : '1px solid transparent', opacity: i===activeImageIdx ? 1 : 0.5, transition:'all 0.3s', fontFamily:'var(--font-display)', fontSize:'1.5rem', color:'rgba(123,28,46,0.3)', overflow: 'hidden' }}
                 onMouseEnter={e => { e.currentTarget.style.opacity='1'; e.currentTarget.style.borderColor='var(--white)'; }}
                 onMouseLeave={e => { if(i!==activeImageIdx){ e.currentTarget.style.opacity='0.5'; e.currentTarget.style.borderColor='transparent'; } }}>
-                {typeof img === 'string' ? (
-                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  product.icon
-                )}
+                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             ))}
           </div>
@@ -126,7 +130,7 @@ export default function ProductPage({ params }: Props) {
           <div style={{ display:'flex', alignItems:'baseline', gap:'12px', marginBottom:'28px' }}>
             <span style={{ fontFamily:'var(--font-display)', fontSize:'2.2rem', color:'var(--white)' }}>₹{product.price.toLocaleString('en-IN')}</span>
             {product.originalPrice && <span style={{ fontFamily:'var(--font-condensed)', fontSize:'1rem', color:'rgba(245,240,235,0.3)', textDecoration:'line-through' }}>₹{product.originalPrice.toLocaleString('en-IN')}</span>}
-            {product.discount && <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', background:'rgba(45,158,39,0.15)', color:'#2d9e27', padding:'3px 8px' }}>{product.discount}% OFF</span>}
+            {product.discount && <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.75rem', background:'rgba(45,158,45,0.15)', color:'#2d9e27', padding:'3px 8px' }}>{product.discount}% OFF</span>}
           </div>
 
           {/* Color selector */}
@@ -136,7 +140,7 @@ export default function ProductPage({ params }: Props) {
             </p>
             <div style={{ display:'flex', gap:'8px' }}>
               {product.colors.map(c => (
-                <div key={c.name} title={c.name} onClick={() => setSelectedColor(c)} style={{ width:'28px', height:'28px', borderRadius:'50%', background:c.hex, border: selectedColor.name===c.name ? '3px solid var(--white)' : '2px solid transparent', cursor:'pointer', transition:'all 0.2s', outline:'1px solid rgba(245,240,235,0.2)' }} />
+                <div key={c.name} title={c.name} onClick={() => handleColorChange(c)} style={{ width:'28px', height:'28px', borderRadius:'50%', background:c.hex, border: selectedColor.name===c.name ? '3px solid var(--white)' : '2px solid transparent', cursor:'pointer', transition:'all 0.2s', outline:'1px solid rgba(245,240,235,0.2)' }} />
               ))}
             </div>
           </div>
@@ -147,7 +151,9 @@ export default function ProductPage({ params }: Props) {
               <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.72rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--white-dim)' }}>
                 Size: <span style={{ color:'var(--white)' }}>{selectedSize}</span>
               </p>
-              <button style={{ background:'none', border:'none', fontFamily:'var(--font-condensed)', fontSize:'0.7rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--burgundy)', cursor:'pointer' }}>Size Guide</button>
+              <button 
+                onClick={() => setShowSizeChart(true)}
+                style={{ background:'none', border:'none', fontFamily:'var(--font-condensed)', fontSize:'0.7rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--burgundy)', cursor:'pointer' }}>Size Guide</button>
             </div>
             <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
               {product.sizes.map(s => (
@@ -175,7 +181,7 @@ export default function ProductPage({ params }: Props) {
 
           {/* Trust badges */}
           <div style={{ display:'flex', gap:'20px', padding:'16px 0', borderTop:'1px solid var(--white-faint)', borderBottom:'1px solid var(--white-faint)', marginBottom:'28px', flexWrap:'wrap' }}>
-            {['🚚 Free Shipping over ₹999', '↩ Easy Returns', '✝ Faith-Inspired', '🔒 Secure Payment'].map(b => (
+            {['🚚 Free Shipping over ₹999', '🕒 Dispatch: 4-9 Days', '✝ Faith-Inspired', '🔒 Secure Payment'].map(b => (
               <span key={b} style={{ fontFamily:'var(--font-condensed)', fontSize:'0.68rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--white-dim)' }}>{b}</span>
             ))}
           </div>
@@ -223,6 +229,49 @@ export default function ProductPage({ params }: Props) {
           <h2 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2rem,4vw,3.5rem)', marginBottom:'36px' }}>RELATED PRODUCTS</h2>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'3px' }}>
             {related.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        </div>
+      )}
+
+      {/* SIZE CHART MODAL */}
+      {showSizeChart && (
+        <div style={{ position:'fixed', inset:0, zIndex:10000, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+          <div onClick={() => setShowSizeChart(false)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.85)', backdropFilter:'blur(10px)' }} />
+          <div style={{ position:'relative', background:'var(--off-black)', width:'100%', maxWidth:'600px', border:'1px solid var(--white-faint)', padding:'40px' }}>
+            <button onClick={() => setShowSizeChart(false)} style={{ position:'absolute', top:'20px', right:'20px', background:'none', border:'none', color:'var(--white-dim)', fontSize:'1.2rem', cursor:'pointer' }}>✕</button>
+            <h3 style={{ fontFamily:'var(--font-display)', fontSize:'2.5rem', marginBottom:'8px' }}>SIZE GUIDE</h3>
+            <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.8rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--burgundy)', marginBottom:'28px' }}>Men&apos;s Oversized Tee Dimensions (Inches)</p>
+            
+            <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'var(--font-condensed)', fontSize:'0.9rem', letterSpacing:'0.05em' }}>
+              <thead>
+                <tr style={{ borderBottom:'1px solid var(--white-faint)', color:'var(--white-dim)' }}>
+                  <th style={{ textAlign:'left', padding:'12px 0' }}>SIZE</th>
+                  <th style={{ textAlign:'center', padding:'12px 0' }}>CHEST</th>
+                  <th style={{ textAlign:'center', padding:'12px 0' }}>SHOULDER</th>
+                  <th style={{ textAlign:'center', padding:'12px 0' }}>LENGTH</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['XS', '40"', '18.5"', '27"'],
+                  ['S', '42"', '19.5"', '28"'],
+                  ['M', '44"', '20.5"', '29"'],
+                  ['L', '46"', '21.5"', '30"'],
+                  ['XL', '48"', '22.5"', '31"'],
+                  ['XXL', '50"', '23.5"', '32"'],
+                ].map(([sz, ch, sh, len]) => (
+                  <tr key={sz} style={{ borderBottom:'1px solid rgba(245,240,235,0.04)' }}>
+                    <td style={{ padding:'14px 0', color:'var(--white)', fontWeight:700 }}>{sz}</td>
+                    <td style={{ padding:'14px 0', textAlign:'center', color:'var(--white-dim)' }}>{ch}</td>
+                    <td style={{ padding:'14px 0', textAlign:'center', color:'var(--white-dim)' }}>{sh}</td>
+                    <td style={{ padding:'14px 0', textAlign:'center', color:'var(--white-dim)' }}>{len}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ marginTop:'28px', fontSize:'0.75rem', color:'rgba(245,240,235,0.3)', lineHeight:1.6 }}>
+              * Measurements are for the garment itself. We recommend comparing with a tee you already own for the best fit. Risen Culture Oversized fit is designed to be relaxed.
+            </p>
           </div>
         </div>
       )}
