@@ -36,152 +36,129 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Sync from LocalStorage on mount
+  // 1. Initial Load from LocalStorage
   useEffect(() => {
     const saved = localStorage.getItem('rc_cart');
-    if (saved && !user) {
-      setItems(JSON.parse(saved));
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse cart", e);
+      }
     }
     setIsInitialized(true);
   }, []);
 
-  // Handle User Login/Logout Cart Merging
+  // 2. Persist to LocalStorage (Always)
   useEffect(() => {
-    if (!isInitialized) return;
-
-    if (user) {
-      const syncCartToDb = async () => {
-        // Fetch existing cloud cart
-        const { data: cloudItems, error } = await supabase
-          .from('cart_items')
-          .select('*')
-          .eq('user_id', user.id);
-
-        let merged = [...(cloudItems || [])].map((dbItem: any) => ({
-          id: `${dbItem.product_id}-${dbItem.size}-${dbItem.color}`,
-          productId: dbItem.product_id,
-          name: dbItem.name,
-          price: dbItem.price,
-          size: dbItem.size,
-          color: dbItem.color,
-          qty: dbItem.qty,
-          icon: dbItem.icon
-        }));
-
-        // Merge local storage cart into cloud if local items exist
-        const saved = localStorage.getItem('rc_cart');
-        if (saved) {
-          const localItems: CartItem[] = JSON.parse(saved);
-          
-          for (const localItem of localItems) {
-            const existingCloudIndex = merged.findIndex(i => i.id === localItem.id);
-            if (existingCloudIndex >= 0) {
-              // Add quantities
-              merged[existingCloudIndex].qty += localItem.qty;
-              await supabase.from('cart_items').update({ qty: merged[existingCloudIndex].qty })
-                .match({ user_id: user.id, product_id: localItem.productId, size: localItem.size, color: localItem.color });
-            } else {
-              merged.push(localItem);
-              await supabase.from('cart_items').insert({
-                user_id: user.id,
-                product_id: localItem.productId,
-                name: localItem.name,
-                size: localItem.size,
-                color: localItem.color,
-                qty: localItem.qty,
-                price: localItem.price,
-                icon: localItem.icon
-              });
-            }
-          }
-          localStorage.removeItem('rc_cart');
-        }
-        
-        setItems(merged);
-      };
-
-      syncCartToDb();
-    } else {
-      // User logged out, clear items and check local storage
-      const saved = localStorage.getItem('rc_cart');
-      setItems(saved ? JSON.parse(saved) : []);
-    }
-  }, [user, isInitialized]);
-
-  // Persist to local storage if NOT logged in
-  useEffect(() => {
-    if (isInitialized && !user) {
+    if (isInitialized) {
       localStorage.setItem('rc_cart', JSON.stringify(items));
     }
-  }, [items, user, isInitialized]);
+  }, [items, isInitialized]);
 
-  const addItem = useCallback(async (item: Omit<CartItem, 'id'>) => {
+  // 3. Background Sync to DB when User Logs In
+  useEffect(() => {
+    if (!isInitialized || !user) return;
+
+    const syncWithDb = async () => {
+      // Fetch cloud items
+      const { data: cloudItems } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (cloudItems && cloudItems.length > 0) {
+        setItems(prev => {
+          const merged = [...prev];
+          cloudItems.forEach((dbItem: any) => {
+            const id = `${dbItem.product_id}-${dbItem.size}-${dbItem.color}`;
+            const exists = merged.find(i => i.id === id);
+            if (!exists) {
+              merged.push({
+                id,
+                productId: dbItem.product_id,
+                name: dbItem.name,
+                price: dbItem.price,
+                size: dbItem.size,
+                color: dbItem.color,
+                qty: dbItem.qty,
+                icon: dbItem.icon
+              });
+            }
+          });
+          return merged;
+        });
+      }
+    };
+
+    syncWithDb();
+  }, [user, isInitialized]);
+
+  const addItem = useCallback((item: Omit<CartItem, 'id'>) => {
     const id = `${item.productId}-${item.size}-${item.color}`;
     
-    // Optimistic UI Update
     setItems(prev => {
       const existing = prev.find(i => i.id === id);
-      if (existing) {
-        return prev.map(i => i.id === id ? { ...i, qty: i.qty + item.qty } : i);
-      }
-      return [...prev, { ...item, id }];
-    });
-
-    if (user) {
-      // Find current qty in DB first or just blindly upsert using ON CONFLICT? 
-      // Supabase js upsert requires all unique keys. The DB has UNIQUE(user_id, product_id, size, color)
-      // Since we optimistically updated state, let's just calculate the new total qty from state
-      const existingItem = items.find(i => i.id === id);
-      const newQty = existingItem ? existingItem.qty + item.qty : item.qty;
-
-      const { error } = await supabase.from('cart_items').upsert({
-        user_id: user.id,
-        product_id: item.productId,
-        name: item.name,
-        size: item.size,
-        color: item.color,
-        qty: newQty,
-        price: item.price,
-        icon: item.icon
-      }, { onConflict: 'user_id, product_id, size, color' });
-
-      if (error) console.error("Error saving to cart:", error);
-    }
-  }, [user, items]);
-
-  const removeItem = useCallback(async (id: string) => {
-    const itemToRemove = items.find(i => i.id === id);
-    setItems(prev => prev.filter(i => i.id !== id));
-    
-    if (user && itemToRemove) {
-      await supabase.from('cart_items')
-        .delete()
-        .match({ user_id: user.id, product_id: itemToRemove.productId, size: itemToRemove.size, color: itemToRemove.color });
-    }
-  }, [user, items]);
-
-  const updateQty = useCallback(async (id: string, qty: number) => {
-    const targetItem = items.find(i => i.id === id);
-    if (!targetItem) return;
-
-    if (qty <= 0) {
-      removeItem(id);
-    } else {
-      setItems(prev => prev.map(i => i.id === id ? { ...i, qty } : i));
+      const updated = existing 
+        ? prev.map(i => i.id === id ? { ...i, qty: i.qty + item.qty } : i)
+        : [...prev, { ...item, id }];
+      
+      // Background sync to Supabase if logged in
       if (user) {
-        await supabase.from('cart_items')
-          .update({ qty })
-          .match({ user_id: user.id, product_id: targetItem.productId, size: targetItem.size, color: targetItem.color });
+        const newItem = updated.find(i => i.id === id);
+        if (newItem) {
+          supabase.from('cart_items').upsert({
+            user_id: user.id,
+            product_id: newItem.productId,
+            name: newItem.name,
+            size: newItem.size,
+            color: newItem.color,
+            qty: newItem.qty,
+            price: newItem.price,
+            icon: newItem.icon
+          }, { onConflict: 'user_id, product_id, size, color' }).then(({ error }) => {
+            if (error) console.error("Sync error:", error);
+          });
+        }
       }
-    }
-  }, [user, items, removeItem]);
+      return updated;
+    });
+  }, [user]);
 
-  const clearCart = useCallback(async () => {
+  const removeItem = useCallback((id: string) => {
+    setItems(prev => {
+      const filtered = prev.filter(i => i.id !== id);
+      const removedItem = prev.find(i => i.id === id);
+      if (user && removedItem) {
+        supabase.from('cart_items')
+          .delete()
+          .match({ user_id: user.id, product_id: removedItem.productId, size: removedItem.size, color: removedItem.color })
+          .then();
+      }
+      return filtered;
+    });
+  }, [user]);
+
+  const updateQty = useCallback((id: string, qty: number) => {
+    if (qty <= 0) return removeItem(id);
+    
+    setItems(prev => {
+      const updated = prev.map(i => i.id === id ? { ...i, qty } : i);
+      const target = updated.find(i => i.id === id);
+      if (user && target) {
+        supabase.from('cart_items')
+          .update({ qty })
+          .match({ user_id: user.id, product_id: target.productId, size: target.size, color: target.color })
+          .then();
+      }
+      return updated;
+    });
+  }, [user, removeItem]);
+
+  const clearCart = useCallback(() => {
     setItems([]);
     if (user) {
-      await supabase.from('cart_items').delete().eq('user_id', user.id);
-    } else {
-      localStorage.removeItem('rc_cart');
+      supabase.from('cart_items').delete().eq('user_id', user.id).then();
     }
   }, [user]);
 

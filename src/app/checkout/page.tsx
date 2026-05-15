@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-type Step = 'cart' | 'shipping' | 'payment' | 'confirm';
+type Step = 'cart' | 'auth' | 'shipping' | 'payment' | 'confirm';
 
 export default function CheckoutPage() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
@@ -19,6 +19,11 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'', method:'upi', upi:'', txnId:'' });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  // Redirect to shipping automatically if user logs in while on auth step
+  if (user && step === 'auth') {
+    setStep('shipping');
+  }
 
   const handlePlaceOrder = async () => {
     setLoading(true);
@@ -59,8 +64,9 @@ export default function CheckoutPage() {
   const shipping = totalPrice >= 999 ? 0 : 60;
   const grandTotal = totalPrice + shipping;
 
-  const stepLabels: Step[] = ['cart','shipping','payment','confirm'];
-  const stepNames = ['Review','Shipping','Payment','Done'];
+  const stepLabels: Step[] = ['cart', 'auth', 'shipping', 'payment', 'confirm'];
+  const filteredStepLabels = user ? ['cart', 'shipping', 'payment', 'confirm'] as Step[] : stepLabels;
+  const stepNames = user ? ['Review', 'Shipping', 'Payment', 'Done'] : ['Review', 'Login', 'Shipping', 'Payment', 'Done'];
 
   if (items.length === 0 && step !== 'confirm') {
     return (
@@ -84,18 +90,18 @@ export default function CheckoutPage() {
           RISEN<span style={{ color:'var(--burgundy)' }}>.</span>CULTURE
         </Link>
         {/* Steps */}
-        <div style={{ display:'flex', gap:'0', marginTop:'24px' }}>
-          {stepLabels.map((s, i) => (
-            <div key={s} style={{ display:'flex', alignItems:'center', flex: i < stepLabels.length-1 ? 1 : 0 }}>
+        <div style={{ display:'flex', gap:'0', marginTop:'24px', overflowX:'auto', paddingBottom:'10px' }}>
+          {filteredStepLabels.map((s, i) => (
+            <div key={s} style={{ display:'flex', alignItems:'center', flex: i < filteredStepLabels.length-1 ? 1 : 0 }}>
               <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'4px' }}>
-                <div style={{ width:'28px', height:'28px', borderRadius:'50%', background: stepLabels.indexOf(step) >= i ? 'var(--burgundy)' : 'var(--card-bg)', border:'1px solid var(--white-faint)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-condensed)', fontSize:'0.72rem', color:'var(--white)' }}>
-                  {stepLabels.indexOf(step) > i ? '✓' : i+1}
+                <div style={{ width:'28px', height:'28px', borderRadius:'50%', background: filteredStepLabels.indexOf(step) >= i ? 'var(--burgundy)' : 'var(--card-bg)', border:'1px solid var(--white-faint)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-condensed)', fontSize:'0.72rem', color:'var(--white)' }}>
+                  {filteredStepLabels.indexOf(step) > i ? '✓' : i+1}
                 </div>
-                <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.62rem', letterSpacing:'0.15em', textTransform:'uppercase', color: stepLabels.indexOf(step) >= i ? 'var(--white)' : 'var(--white-dim)', whiteSpace:'nowrap' }}>
+                <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.62rem', letterSpacing:'0.15em', textTransform:'uppercase', color: filteredStepLabels.indexOf(step) >= i ? 'var(--white)' : 'var(--white-dim)', whiteSpace:'nowrap' }}>
                   {stepNames[i]}
                 </span>
               </div>
-              {i < stepLabels.length-1 && <div style={{ flex:1, height:'1px', background: stepLabels.indexOf(step) > i ? 'var(--burgundy)' : 'rgba(245,240,235,0.1)', margin:'0 8px', marginBottom:'20px' }} />}
+              {i < filteredStepLabels.length-1 && <div style={{ flex:1, minWidth:'20px', height:'1px', background: filteredStepLabels.indexOf(step) > i ? 'var(--burgundy)' : 'rgba(245,240,235,0.1)', margin:'0 8px', marginBottom:'20px' }} />}
             </div>
           ))}
         </div>
@@ -121,9 +127,23 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => setStep('shipping')} className="btn-primary" style={{ marginTop:'28px', width:'100%' }}>
+              <button onClick={() => user ? setStep('shipping') : setStep('auth')} className="btn-primary" style={{ marginTop:'28px', width:'100%' }}>
                 Continue to Shipping →
               </button>
+            </div>
+          )}
+
+          {/* STEP: Auth (for guest users) */}
+          {step === 'auth' && !user && (
+            <div style={{ maxWidth:'400px' }}>
+              <h2 style={{ fontFamily:'var(--font-display)', fontSize:'2rem', marginBottom:'12px' }}>SIGN IN TO PROCEED</h2>
+              <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.85rem', color:'var(--white-dim)', marginBottom:'28px', letterSpacing:'0.05em' }}>
+                Please sign in or create an account to secure your order and track its progress.
+              </p>
+              <div style={{ display:'flex', gap:'12px', marginBottom:'24px' }}>
+                <Link href="/account" className="btn-primary" style={{ flex:1, textAlign:'center' }}>Go to Login / Register</Link>
+              </div>
+              <button onClick={() => setStep('cart')} className="btn-secondary" style={{ width:'100%' }}>← Back to Cart</button>
             </div>
           )}
 
