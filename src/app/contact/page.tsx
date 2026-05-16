@@ -8,7 +8,7 @@ export default function ContactPage() {
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem, 8vw, 4rem)', lineHeight: 1, marginBottom: '40px', letterSpacing: '0.02em' }}>
           CONTACT <span style={{ color: 'var(--burgundy)' }}>US</span>
         </h1>
-        
+
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px' }}>
           {/* Contact Info */}
           <div>
