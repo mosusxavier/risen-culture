@@ -40,7 +40,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div style={{ background: 'var(--card-bg)', padding: '40px', border: '1px solid var(--white-faint)' }}>
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontFamily: 'var(--font-condensed)', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--white-dim)', marginBottom: '8px' }}>Full Name</123label>
+              <label style={{ display: 'block', fontFamily: 'var(--font-condensed)', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--white-dim)', marginBottom: '8px' }}>Full Name</label>
               <input type="text" placeholder="Your Name" style={{ width: '100%', padding: '12px', background: 'var(--off-black)', border: '1px solid var(--white-faint)', color: 'var(--white)', fontFamily: 'var(--font-condensed)' }} />
             </div>
             <div style={{ marginBottom: '24px' }}>
