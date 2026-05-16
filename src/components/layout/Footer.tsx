@@ -32,9 +32,9 @@ const footerLinks = {
 };
 
 const socials = [
-  { label: 'IG', href: 'https://instagram.com/risenculture.in' },
+  { label: 'IG', href: 'https://instagram.com/risenculture.shop' },
   { label: 'TW', href: 'https://twitter.com' },
-  { label: 'TH', href: 'https://threads.net/@risenculture.in' },
+  { label: 'TH', href: 'https://threads.net/@risenculture.shop' },
   { label: 'YT', href: 'https://youtube.com' },
 ];
 

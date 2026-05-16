@@ -33,7 +33,7 @@ export default function ContactPage() {
 
             <div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', marginBottom: '8px' }}>FOLLOW US</h3>
-              <p style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.9rem', color: 'var(--white-dim)', letterSpacing: '0.05em' }}>Instagram: @risenculture</p>
+              <p style={{ fontFamily: 'var(--font-condensed)', fontSize: '0.9rem', color: 'var(--white-dim)', letterSpacing: '0.05em' }}>Instagram: @risenculture.shop</p>
             </div>
           </div>
 
