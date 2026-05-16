@@ -15,8 +15,14 @@ const footerLinks = {
     { label: 'My Account', href: '/account' },
     { label: 'Order Tracking', href: '/account#orders' },
     { label: 'Size Guide', href: '/size-guide' },
-    { label: 'Instagram', href: 'https://instagram.com/risenculture.in' },
+    { label: 'Contact Us', href: '/contact' },
     { label: 'Email Support', href: 'mailto:risenculture.store@gmail.com' },
+  ],
+  Policies: [
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Refund & Returns', href: '/refund-policy' },
+    { label: 'Terms & Conditions', href: '/terms' },
+    { label: 'Shipping Policy', href: '/shipping-policy' },
   ],
   Brand: [
     { label: 'Our Story', href: '/#about' },
