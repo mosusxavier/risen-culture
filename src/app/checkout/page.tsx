@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Script from 'next/script';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -15,8 +16,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('cart');
   const [loading, setLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const [orderId, setOrderId] = useState('');
-  const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'', method:'upi', upi:'', txnId:'' });
+  const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'', method:'razorpay', upi:'', txnId:'' });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -25,7 +27,120 @@ export default function CheckoutPage() {
     setStep('shipping');
   }
 
+  const saveOrderToDb = async (id: string, paymentReference?: string) => {
+    if (!user) return;
+
+    const order = {
+      id,
+      user_id: user.id,
+      total: grandTotal,
+      shipping_info: { name: form.name, email: form.email, phone: form.phone, address: form.address, city: form.city, state: form.state, pincode: form.pincode },
+      payment_method: form.method,
+      payment_reference: paymentReference || null,
+    };
+
+    const { error: orderError } = await supabase.from('orders').insert(order);
+
+    if (!orderError) {
+      const orderItems = items.map(item => ({
+        order_id: id,
+        product_id: item.productId,
+        name: item.name,
+        size: item.size,
+        color: item.color,
+        qty: item.qty,
+        price: item.price,
+        icon: item.icon,
+      }));
+
+      await supabase.from('order_items').insert(orderItems);
+    }
+  };
+
+  const handleRazorpayCheckout = async () => {
+    setLoading(true);
+    setPaymentError('');
+
+    if (typeof window === 'undefined' || !(window as any).Razorpay) {
+      setPaymentError('Razorpay checkout is not available yet. Please try again.');
+      setLoading(false);
+      return;
+    }
+
+    const id = 'RC-' + Date.now();
+    const response = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: grandTotal * 100, currency: 'INR', receipt: id }),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      setPaymentError(payload?.error || 'Unable to initialize payment.');
+      setLoading(false);
+      return;
+    }
+
+    const data = await response.json();
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.order_id,
+      name: 'RISEN CULTURE',
+      description: 'Order payment',
+      prefill: {
+        name: form.name,
+        email: form.email,
+        contact: form.phone,
+      },
+      theme: { color: '#7b1c2e' },
+      modal: {
+        ondismiss: () => {
+          setPaymentError('Payment was cancelled.');
+          setLoading(false);
+        },
+      },
+      handler: async (paymentResult: any) => {
+        const verifyResponse = await fetch('/api/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_payment_id: paymentResult.razorpay_payment_id,
+            razorpay_order_id: paymentResult.razorpay_order_id,
+            razorpay_signature: paymentResult.razorpay_signature,
+          }),
+        });
+
+        if (!verifyResponse.ok) {
+          const payload = await verifyResponse.json().catch(() => null);
+          setPaymentError(payload?.error || 'Payment verification failed.');
+          setLoading(false);
+          return;
+        }
+
+        await saveOrderToDb(id, paymentResult.razorpay_payment_id);
+        setOrderId(id);
+        clearCart();
+        setStep('confirm');
+        setLoading(false);
+      },
+    };
+
+    const rzpay = new (window as any).Razorpay(options);
+    rzpay.on('payment.failed', (errorResponse: any) => {
+      setPaymentError(errorResponse.error?.description || 'Payment failed. Please try again.');
+      setLoading(false);
+    });
+    rzpay.open();
+  };
+
   const handlePlaceOrder = async () => {
+    if (form.method === 'razorpay') {
+      await handleRazorpayCheckout();
+      return;
+    }
+
     setLoading(true);
     const id = 'RC-' + Date.now();
     
@@ -84,6 +199,7 @@ export default function CheckoutPage() {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', paddingTop:'80px' }}>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       {/* Header */}
       <div style={{ padding:'32px 5%', borderBottom:'1px solid var(--white-faint)' }}>
         <Link href="/" style={{ fontFamily:'var(--font-display)', fontSize:'1.8rem', letterSpacing:'0.15em', color:'var(--white)', textDecoration:'none' }}>
@@ -177,13 +293,21 @@ export default function CheckoutPage() {
             <div>
               <h2 style={{ fontFamily:'var(--font-display)', fontSize:'2rem', marginBottom:'28px' }}>PAYMENT METHOD</h2>
               <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginBottom:'24px' }}>
-                {[['upi','📱 UPI / Google Pay / PhonePe'],['paypal','🔵 PayPal']].map(([v,label]) => (
+                {[['razorpay','💳 Razorpay'], ['upi','📱 UPI / Google Pay / PhonePe'],['paypal','🔵 PayPal']].map(([v,label]) => (
                   <label key={v} style={{ display:'flex', alignItems:'center', gap:'12px', padding:'16px', background: form.method===v ? 'rgba(123,28,46,0.15)' : 'var(--card-bg)', border: form.method===v ? '1px solid var(--burgundy)' : '1px solid rgba(245,240,235,0.08)', cursor:'pointer', transition:'all 0.3s' }}>
                     <input type="radio" name="method" value={v} checked={form.method===v} onChange={() => update('method',v)} style={{ accentColor:'var(--burgundy)' }} />
                     <span style={{ fontFamily:'var(--font-condensed)', fontSize:'0.88rem', letterSpacing:'0.05em', color:'var(--white)' }}>{label}</span>
                   </label>
                 ))}
               </div>
+
+              {form.method==='razorpay' && (
+                <div style={{ marginBottom:'20px', padding:'16px', background:'rgba(245,240,235,0.05)', border:'1px solid rgba(245,240,235,0.1)', borderRadius:'4px' }}>
+                  <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.85rem', color:'var(--white-dim)', letterSpacing:'0.05em' }}>
+                    Complete your payment securely through Razorpay. A payment modal will open when you place your order.
+                  </p>
+                </div>
+              )}
 
               {form.method==='upi' && (
                 <div style={{ padding:'24px', background:'var(--card-bg)', border:'1px solid var(--white-faint)', borderRadius:'8px', marginBottom:'24px', textAlign:'center' }}>
@@ -218,10 +342,13 @@ export default function CheckoutPage() {
 
               <div style={{ display:'flex', gap:'12px' }}>
                 <button onClick={() => setStep('shipping')} className="btn-secondary" style={{ flex:1 }}>← Back</button>
-                <button onClick={handlePlaceOrder} className="btn-primary" style={{ flex:2, opacity: (loading || (form.method==='upi' && !form.txnId)) ? 0.7 : 1 }} disabled={loading || (form.method==='upi' && !form.txnId)}>
+                <button onClick={handlePlaceOrder} className="btn-primary" style={{ flex:2, opacity: loading ? 0.7 : 1 }} disabled={loading}>
                   {loading ? 'Processing…' : `Confirm Payment & Place Order`}
                 </button>
               </div>
+              {paymentError && (
+                <p style={{ marginTop:'18px', color:'#ff6b6b', fontFamily:'var(--font-condensed)', fontSize:'0.9rem' }}>{paymentError}</p>
+              )}
               <p style={{ fontFamily:'var(--font-condensed)', fontSize:'0.65rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--white-dim)', textAlign:'center', marginTop:'12px' }}>
                 🔒 Secured with 256-bit SSL encryption
               </p>

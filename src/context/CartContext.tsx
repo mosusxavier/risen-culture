@@ -116,7 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             qty: newItem.qty,
             price: newItem.price,
             icon: newItem.icon
-          }, { onConflict: 'user_id, product_id, size, color' }).then(({ error }) => {
+          }, { onConflict: 'user_id, product_id, size, color' }).then(({ error }: { error: unknown }) => {
             if (error) console.error("Sync error:", error);
           });
         }
